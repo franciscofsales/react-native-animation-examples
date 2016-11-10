@@ -48,12 +48,16 @@ export default class reactNativeAnimationExample extends Component {
     });
 
     // COlor animation
-    this.colorAnimatedValue = new Animated.Value();
+    this.colorAnimatedValue = new Animated.Value(0);
 
   }
 
   componentDidMount() {
-
+    //color animation
+    Animated.timing(this.colorAnimatedValue, {
+      toValue: 150,
+      duration: 2500
+    }).start();
   }
 
   // Button
@@ -90,7 +94,10 @@ export default class reactNativeAnimationExample extends Component {
       outputRange: ['rgb(0, 0, 0)', 'rgb(52, 250, 170)']
     });
     const colorAnimatedStyle = {
-      backgroundColor: interpolateColor
+      backgroundColor: interpolateColor,
+      transform: [
+        {translateX: this.colorAnimatedValue}
+      ]
     };
 
     return (
@@ -108,7 +115,7 @@ export default class reactNativeAnimationExample extends Component {
           <Text style={styles.textStyle}>Drag me</Text>
         </Animated.View>
 
-        <Animated.View style={[styles.box, colorAnimatedStyle]} {...this.panResponder.panHandlers}>
+        <Animated.View style={[styles.box, colorAnimatedStyle]}>
           <Text style={styles.textStyle}>Check my color</Text>
         </Animated.View>
       </View>
