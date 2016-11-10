@@ -7,8 +7,11 @@ import {
   Animated,
   Easing,
   TouchableWithoutFeedback,
-  PanResponder
+  PanResponder,
+  Dimensions
 } from 'react-native';
+
+const {height} = Dimensions.get("window");
 
 export default class reactNativeAnimationExample extends Component {
   constructor(props){
@@ -50,6 +53,22 @@ export default class reactNativeAnimationExample extends Component {
     // COlor animation
     this.colorAnimatedValue = new Animated.Value(0);
 
+    // spinner
+    this.spinnerAnimatedValue = new Animated.Value(0);
+
+
+    // squeuence
+    this.animatedValueOne = new Animated.Value(0);
+    this.animatedValueTwo = new Animated.Value(1);
+
+    //stagger
+    this.animatedValue1 = new Animated.Value(0);
+    this.animatedValue2 = new Animated.Value(0);
+    this.animatedValue3 = new Animated.Value(0);
+
+    //multiple
+    this.multipleAnimatedValue1 = new Animated.Value(0);
+    this.multipleAnimatedValue2 = new Animated.Value(1);
   }
 
   componentDidMount() {
@@ -58,6 +77,59 @@ export default class reactNativeAnimationExample extends Component {
       toValue: 150,
       duration: 2500
     }).start();
+
+    //spinner
+    Animated.timing(this.spinnerAnimatedValue,{
+      toValue: 1,
+      duration: 1500,
+      easing: Easing.elastic(1)
+    }).start();
+
+    //sequence
+    Animated.sequence([
+      Animated.timing(this.animatedValueOne, {
+        toValue: 75,
+        duration: 1000
+      }),
+      Animated.spring(this.animatedValueTwo, {
+        toValue: 1.5,
+      }),
+      Animated.timing(this.animatedValueOne, {
+        toValue: 0,
+        duration: 1000
+      }),
+      Animated.spring(this.animatedValueTwo, {
+        toValue: 0.5,
+      }),
+    ]).start();
+
+
+    //stagger
+    Animated.stagger(300, [
+      Animated.timing(this.animatedValue1, {
+        toValue:50,
+        duration:1500
+      }),
+      Animated.timing(this.animatedValue2, {
+        toValue:50,
+        duration:1500
+      }),
+      Animated.timing(this.animatedValue3, {
+        toValue:50,
+        duration:1500
+      }),
+    ]).start();
+
+    //multiple
+    Animated.parallel([
+      Animated.timing(this.multipleAnimatedValue1, {
+        toValue: 30,
+        duration: 300
+      }),
+      Animated.spring(this.multipleAnimatedValue2,{
+        toValue: 1.3
+      })
+    ]).start();
   }
 
   // Button
@@ -95,11 +167,46 @@ export default class reactNativeAnimationExample extends Component {
     });
     const colorAnimatedStyle = {
       backgroundColor: interpolateColor,
+    };
+
+    //spinner
+    const interpolateRotation = this.spinnerAnimatedValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: ['0deg', '360deg']
+    });
+    const spinnerAnimatedStyle = {
       transform: [
-        {translateX: this.colorAnimatedValue}
+        {rotate: interpolateRotation}
+      ]
+    }
+
+
+    //sequence
+    const sequenceAnimatedStyle = {
+      transform:[
+        { translateX: this.animatedValueOne },
+        { scale: this.animatedValueTwo}
       ]
     };
 
+    //stagger
+    const staggerAnimatedStyle1 = {
+      height: this.animatedValue1
+    }
+    const staggerAnimatedStyle2 = {
+      height: this.animatedValue2
+    }
+    const staggerAnimatedStyle3 = {
+      height: this.animatedValue3
+    }
+
+    //multiple
+    const multipleAnimatedStyle = {
+      transform:[
+        { translateX: this.multipleAnimatedValue1 },
+        { scale: this.multipleAnimatedValue2 }
+      ]
+    };
     return (
       <View style={styles.container}>
         <TouchableWithoutFeedback
@@ -117,6 +224,29 @@ export default class reactNativeAnimationExample extends Component {
 
         <Animated.View style={[styles.box, colorAnimatedStyle]}>
           <Text style={styles.textStyle}>Check my color</Text>
+        </Animated.View>
+
+        <Animated.View style={[styles.box, spinnerAnimatedStyle]}>
+          <Text style={styles.textStyle}>Check my rotation</Text>
+        </Animated.View>
+
+        <Animated.View style={[styles.box, sequenceAnimatedStyle]}>
+          <Text style={styles.textStyle}>Sequence</Text>
+        </Animated.View>
+
+        <View style={{flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
+          <Animated.View style={[styles.box, staggerAnimatedStyle1]}>
+            <Text style={styles.textStyle}>stagger</Text>
+          </Animated.View>
+          <Animated.View style={[styles.box, staggerAnimatedStyle2]}>
+            <Text style={styles.textStyle}>stagger</Text>
+          </Animated.View>
+          <Animated.View style={[styles.box, staggerAnimatedStyle3]}>
+            <Text style={styles.textStyle}>stagger</Text>
+          </Animated.View>
+        </View>
+        <Animated.View style={[styles.box, multipleAnimatedStyle]}>
+          <Text style={styles.textStyle}>multiple</Text>
         </Animated.View>
       </View>
     );
